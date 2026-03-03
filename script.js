@@ -11,6 +11,7 @@ document.addEventListener('DOMContentLoaded', function(event) {
   //locationField = document.getElementById("location");
   locationField = document.querySelector("#location");
   infoField = document.getElementById('info');
+  img = document.getElementById("weatherImg");
 })
 
 // create web audio api context
@@ -18,6 +19,7 @@ audioCtx = new (window.AudioContext || window.webkitAudioContext)();
 
 // create Oscillator node
 const oscillator = audioCtx.createOscillator();
+
 
 oscillator.type = "square";
 oscillator.frequency.setValueAtTime(freq, audioCtx.currentTime); // value in hertz
@@ -30,17 +32,24 @@ function sonify(){
 fetch('https://weather.visualcrossing.com/VisualCrossingWebServices/rest/services/timeline/'+locationField.value +'?key=YH5QF5SWJL5LZ8SFPZFT2RCC2')
 	.then(response => response.json())
 	.then(response => {
-    freq = response.days[0].temp + 50; console.log(freq - 50); 
-    oscillator.frequency.setValueAtTime(freq, audioCtx.currentTime); 
-    audioCtx.resume();
-    infoField.innerHTML = "the weather in " + locationField.value + " is " + response.days[0].temp
-    if (response.days[0].temp < 60) {
-      infoField.innerHTML += " ❄️"
+    const temp=response.days[0].temp;
+    
+    if (temp<50){
+      document.body.style.backgroundColor="#57A0D2";
+      img.src="snowflake.png";
     }
+
+    else if (temp<75){
+      document.body.style.backgroundColor="#FFDB58";
+      img.src="leaves.png";
+    }
+
     else {
-      infoField.innerHTML += " ☀️"
+      document.body.style.backgroundColor="#E55451";
+      img.src="sun.png";
     }
-  })
+    }
+  )
 	.catch(err => console.error(err));
 }
 
